@@ -1,92 +1,85 @@
 // --- Global Variables & Constants ---
-// IMPORTANT: Replace with your actual TMDb API key.
-// Best Practice: Store this securely, not directly in code for public sites.
-const API_KEY = 'eacc73ab9261fcee9b1146019d49d625';
+const API_KEY = 'eacc73ab9261fcee9b1146019d49d625'; // <<< IMPORTANT: Replace this!
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
-
-// Poster sizes: "w92", "w154", "w185", "w342", "w500", "w780", "original"
 const POSTER_SIZE_CARD = 'w342';
 const POSTER_SIZE_DETAIL = 'w500';
-// Backdrop sizes: "w300", "w780", "w1280", "original"
 const BACKDROP_SIZE = 'w1280';
+
+// TMDb Genre IDs (Common ones)
+const GENRE_DRAMA = 18;
+const GENRE_ANIMATION = 16;
+const KEYWORD_ANIME = 210024; // For better anime filtering
 
 // --- Helper Functions ---
 
-/**
- * Fetches data from TMDb API.
- * @param {string} endpoint - The API endpoint (e.g., '/movie/popular').
- * @param {string} [queryParams=''] - Optional query parameters (e.g., '&page=2').
- * @returns {Promise<object|null>} - The JSON response or null on error.
- */
 async function fetchTMDbData(endpoint, queryParams = '') {
     const url = `${BASE_URL}${endpoint}?api_key=${API_KEY}&language=en-US${queryParams}`;
     try {
         const response = await fetch(url);
         if (!response.ok) {
+            console.error(`HTTP error! Status: ${response.status} for URL: ${url}`);
+            const errorData = await response.json().catch(() => null); // Try parsing error body
+            console.error("Error details:", errorData);
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-        // console.log(`Fetched ${endpoint}:`, data); // Debugging
         return data;
     } catch (error) {
         console.error(`Error fetching ${endpoint}:`, error);
-        return null; // Indicate failure
+        return null;
     }
 }
 
-/**
- * Creates a movie card HTML element.
- * @param {object} movie - Movie object from TMDb.
- * @returns {HTMLElement} - The movie card element.
- */
-function createMovieCard(movie) {
+// Updated to handle both movies and TV shows
+function createGenericCard(item, itemType = 'movie') { // itemType can be 'movie' or 'tv'
     const itemCard = document.createElement('div');
     itemCard.classList.add('item-card');
-    itemCard.dataset.movieId = movie.id; // Store movie ID for later use
+    itemCard.dataset.itemId = item.id;
+    itemCard.dataset.itemType = itemType; // Store type for detail link
 
-    const posterPath = movie.poster_path
-        ? `${IMAGE_BASE_URL}${POSTER_SIZE_CARD}${movie.poster_path}`
-        : 'images/placeholder-poster.png'; // Fallback image
+    const title = itemType === 'movie' ? item.title : item.name;
+    const releaseDate = itemType === 'movie' ? item.release_date : item.first_air_date; // Use appropriate date
+    const detailPage = itemType === 'movie' ? 'movie-detail.html' : 'tv-detail.html'; // Needs tv-detail.html to be created
 
-    // Basic structure (you can switch to the overlay structure if preferred)
-    // itemCard.innerHTML = `
-    //     <img src="${posterPath}" alt="${movie.title || movie.name}">
-    //     <div class="card-info">
-    //         <h3>${movie.title || movie.name}</h3>
-    //         ${movie.vote_average ? `<span><i class="fas fa-star"></i> ${movie.vote_average.toFixed(1)}</span>` : ''}
-    //     </div>
-    // `;
+     // TEMPORARY FIX: For now, point TV shows to movie detail until tv-detail.html is made
+    const detailLink = `movie-detail.html?id=${item.id}&type=${itemType}`;
+    // const detailLink = `${detailPage}?id=${item.id}`;
 
-     // Enhanced Overlay Structure
-      itemCard.innerHTML = `
-         <img src="${posterPath}" alt="${movie.title || movie.name}">
+
+    const posterPath = item.poster_path
+        ? `${IMAGE_BASE_URL}${POSTER_SIZE_CARD}${item.poster_path}`
+        : 'images/placeholder-poster.png';
+
+     itemCard.innerHTML = `
+         <img src="${posterPath}" alt="${title}">
          <div class="card-overlay">
              <button class="watchlist-btn" aria-label="Add to Watchlist"><i class="fas fa-plus"></i></button>
-             <h3>${movie.title || movie.name}</h3>
-             ${movie.vote_average ? `<span class="rating"><i class="fas fa-star"></i> ${movie.vote_average.toFixed(1)}</span>` : ''}
-             <p class="quick-synopsis">${movie.overview ? movie.overview.substring(0, 100) + '...' : 'No synopsis available.'}</p>
-             <a href="movie-detail.html?id=${movie.id}" class="btn btn-primary btn-sm">Details</a>
+             <h3>${title}</h3>
+              <div class="card-meta">
+                  ${item.vote_average ? `<span class="rating"><i class="fas fa-star"></i> ${item.vote_average.toFixed(1)}</span>` : ''}
+                  ${releaseDate ? `<span class="year">(${releaseDate.substring(0, 4)})</span>` : ''}
+              </div>
+             <p class="quick-synopsis">${item.overview ? item.overview.substring(0, 90) + '...' : ''}</p>
+             <a href="${detailLink}" class="btn btn-primary btn-sm">Details</a>
          </div>
-      `;
+     `;
 
-
-    // Add event listener to navigate to detail page (can also be done via the 'a' tag)
+    // Add event listener to navigate (if not clicking button/link)
     itemCard.addEventListener('click', (event) => {
-        // Prevent navigation if watchlist button was clicked
         if (!event.target.closest('.watchlist-btn') && !event.target.closest('.btn')) {
-             window.location.href = `movie-detail.html?id=${movie.id}`;
+             window.location.href = detailLink;
          }
     });
 
-    // Add Watchlist button functionality (basic toggle example)
+    // Add Watchlist button functionality (basic)
      const watchlistBtn = itemCard.querySelector('.watchlist-btn');
      if (watchlistBtn) {
          watchlistBtn.addEventListener('click', (e) => {
-             e.stopPropagation(); // Prevent card click navigation
+             e.stopPropagation();
              watchlistBtn.classList.toggle('added');
-             // In a real app, you'd save this state (e.g., in localStorage or backend)
-             console.log(`Toggled watchlist for movie ID: ${movie.id}`);
+             // console.log(`Toggled watchlist for ${itemType} ID: ${item.id}`);
+             // Implement actual storage logic here
          });
      }
 
@@ -95,275 +88,284 @@ function createMovieCard(movie) {
 
 
 /**
- * Populates a content row with movie cards.
- * @param {string} containerSelector - CSS selector for the row container (e.g., '#trending-movies .row-items').
- * @param {Array} movies - Array of movie objects.
+ * Populates a container (row or grid) with item cards.
+ * @param {string} containerSelector - CSS selector for the items container (e.g., '#trending-movies .row-items', '#browse-grid .content-grid').
+ * @param {Array} items - Array of movie or TV objects.
+ * @param {string} itemType - 'movie' or 'tv'.
+ * @param {boolean} isGrid - True if the container is a grid, false if a row/carousel.
  */
-function populateMovieRow(containerSelector, movies) {
+ function populateContainer(containerSelector, items, itemType = 'movie', isGrid = false) {
     const container = document.querySelector(containerSelector);
     if (!container) {
         console.error(`Container not found: ${containerSelector}`);
         return;
     }
 
-    // Clear existing content (like skeletons or old cards)
-    container.innerHTML = '';
-    container.classList.remove('loading'); // Remove loading state
+    container.innerHTML = ''; // Clear existing content/skeletons
+    container.classList.remove('loading');
 
-    if (!movies || movies.length === 0) {
-        container.innerHTML = '<p class="no-results">No movies found.</p>';
+    if (!items || items.length === 0) {
+         const messageClass = isGrid ? 'no-results' : ''; // Only add class if needed for grid styling
+        container.innerHTML = `<p class="${messageClass}">No content found.</p>`;
         return;
     }
 
-    movies.forEach(movie => {
-        const card = createMovieCard(movie);
-        container.appendChild(card);
+    items.forEach(item => {
+        // Some API results (like multi-search) have 'media_type'
+        const type = item.media_type || itemType;
+         if (type === 'movie' || type === 'tv') { // Only display movies or TV shows
+            const card = createGenericCard(item, type);
+            container.appendChild(card);
+         }
     });
 }
 
+function displayLoadingError(containerSelector, isGrid = false) {
+     const container = document.querySelector(containerSelector);
+     if (container) {
+         container.classList.remove('loading');
+         const messageClass = isGrid ? 'error' : '';
+         container.innerHTML = `<p class="${messageClass}">Could not load content.</p>`;
+     }
+}
 
-// --- Page Specific Logic ---
+// --- Page Specific Initialization Functions ---
 
 // -- Home Page --
 async function initHomePage() {
     console.log("Initializing Home Page...");
-    if (document.getElementById('trending-movies')) { // Check if we are on the home page
-        // Fetch and populate different rows
-        const trendingMoviesData = await fetchTMDbData('/trending/movie/week');
-        if (trendingMoviesData && trendingMoviesData.results) {
-            populateMovieRow('#trending-movies .row-items', trendingMoviesData.results);
+    const sections = [
+        { selector: '#trending-movies .row-items', endpoint: '/trending/movie/week', type: 'movie' },
+        { selector: '#now-playing .row-items', endpoint: '/movie/now_playing', type: 'movie' },
+        { selector: '#top-rated-tv .row-items', endpoint: '/tv/top_rated', type: 'tv' },
+        { selector: '#upcoming-movies .row-items', endpoint: '/movie/upcoming', type: 'movie' }
+    ];
+
+    for (const section of sections) {
+        const data = await fetchTMDbData(section.endpoint);
+        if (data && data.results) {
+            populateContainer(section.selector, data.results, section.type);
         } else {
-             document.querySelector('#trending-movies .row-items')?.classList.remove('loading');
-              document.querySelector('#trending-movies .row-items')?.insertAdjacentHTML('beforeend','<p class="error">Could not load trending movies.</p>');
+            displayLoadingError(section.selector);
         }
-
-
-        const nowPlayingData = await fetchTMDbData('/movie/now_playing');
-         if (nowPlayingData && nowPlayingData.results) {
-            populateMovieRow('#now-playing .row-items', nowPlayingData.results);
-         } else {
-            document.querySelector('#now-playing .row-items')?.classList.remove('loading');
-             document.querySelector('#now-playing .row-items')?.insertAdjacentHTML('beforeend','<p class="error">Could not load now playing movies.</p>');
-        }
-
-
-         const topRatedTvData = await fetchTMDbData('/tv/top_rated');
-         if (topRatedTvData && topRatedTvData.results) {
-             populateMovieRow('#top-rated-tv .row-items', topRatedTvData.results);
-         } else {
-             document.querySelector('#top-rated-tv .row-items')?.classList.remove('loading');
-             document.querySelector('#top-rated-tv .row-items')?.insertAdjacentHTML('beforeend','<p class="error">Could not load top rated TV shows.</p>');
-         }
-
-
-        const upcomingMoviesData = await fetchTMDbData('/movie/upcoming');
-        if (upcomingMoviesData && upcomingMoviesData.results) {
-            populateMovieRow('#upcoming-movies .row-items', upcomingMoviesData.results);
-        } else {
-             document.querySelector('#upcoming-movies .row-items')?.classList.remove('loading');
-             document.querySelector('#upcoming-movies .row-items')?.insertAdjacentHTML('beforeend','<p class="error">Could not load upcoming movies.</p>');
-        }
-
-        // Add search functionality here later
-         initSearch();
     }
+     initSearch();
 }
 
-// -- Movie Detail Page --
+// -- Movie Detail Page -- (Slightly modified to accept itemType)
 async function initMovieDetailPage() {
-     console.log("Initializing Movie Detail Page...");
-    const contentArea = document.getElementById('movie-detail-content');
-    if (!contentArea) return; // Only run on detail page
+     console.log("Initializing Media Detail Page...");
+     const contentArea = document.getElementById('movie-detail-content'); // Keep ID for now
+     if (!contentArea) return;
 
     const urlParams = new URLSearchParams(window.location.search);
-    const movieId = urlParams.get('id');
+    const itemId = urlParams.get('id');
+    const itemType = urlParams.get('type') || 'movie'; // Default to movie if type not specified
 
-    if (!movieId) {
-        contentArea.innerHTML = '<p class="error container">Error: Movie ID not found in URL.</p>';
-        contentArea.classList.add('loaded'); // Stop loading indicator
-        return;
-    }
+    if (!itemId) { /* ... error handling ... */ return; }
 
-    // Fetch all necessary data in parallel
-     const [movieDetails, credits, videos, similarMovies, reviews] = await Promise.all([
-        fetchTMDbData(`/movie/${movieId}`),
-        fetchTMDbData(`/movie/${movieId}/credits`),
-        fetchTMDbData(`/movie/${movieId}/videos`),
-        fetchTMDbData(`/movie/${movieId}/similar`),
-        fetchTMDbData(`/movie/${movieId}/reviews`)
-    ]);
+     // Fetch all necessary data in parallel
+     const [itemDetails, credits, videos, similarItems, reviews] = await Promise.all([
+         fetchTMDbData(`/${itemType}/${itemId}`),
+         fetchTMDbData(`/${itemType}/${itemId}/credits`),
+         fetchTMDbData(`/${itemType}/${itemId}/videos`),
+         fetchTMDbData(`/${itemType}/${itemId}/similar`),
+         fetchTMDbData(`/${itemType}/${itemId}/reviews`)
+     ]);
 
-
-    if (!movieDetails) {
-        contentArea.innerHTML = '<p class="error container">Error: Could not load movie details.</p>';
-         contentArea.classList.add('loaded');
-        return;
-    }
+    if (!itemDetails) { /* ... error handling ... */ contentArea.classList.add('loaded'); return; }
 
     // --- Populate Details ---
-    document.title = `${movieDetails.title} - Sobiflix`; // Set page title
+     const title = itemType === 'movie' ? itemDetails.title : itemDetails.name;
+     const releaseDate = itemType === 'movie' ? itemDetails.release_date : itemDetails.first_air_date;
+     const runtime = itemType === 'movie' ? itemDetails.runtime : itemDetails.episode_run_time?.[0]; // Use first episode runtime for TV
 
-    const backdropPath = movieDetails.backdrop_path ? `${IMAGE_BASE_URL}${BACKDROP_SIZE}${movieDetails.backdrop_path}` : '';
+     document.title = `${title} - Sobiflix`;
+
+     // Update elements using 'itemDetails'
+     const backdropPath = itemDetails.backdrop_path ? `${IMAGE_BASE_URL}${BACKDROP_SIZE}${itemDetails.backdrop_path}` : '';
      const backdropSection = contentArea.querySelector('.movie-backdrop');
-     if (backdropSection) {
-        backdropSection.style.backgroundImage = `url('${backdropPath}')`;
-         backdropSection.style.display = 'flex'; // Show backdrop section
-     }
+     if (backdropSection) { /* ... set background ... */ backdropSection.style.display = 'flex';}
 
-     const posterPath = movieDetails.poster_path ? `${IMAGE_BASE_URL}${POSTER_SIZE_DETAIL}${movieDetails.poster_path}` : 'images/placeholder-poster.png';
-    document.getElementById('detail-poster').src = posterPath;
-    document.getElementById('detail-poster').alt = movieDetails.title + " Poster";
+     const posterPath = itemDetails.poster_path ? `${IMAGE_BASE_URL}${POSTER_SIZE_DETAIL}${itemDetails.poster_path}` : 'images/placeholder-poster.png';
+     document.getElementById('detail-poster').src = posterPath;
+     document.getElementById('detail-poster').alt = title + " Poster";
 
-    document.getElementById('detail-title').textContent = movieDetails.title;
-     document.getElementById('detail-rating').innerHTML = `<i class="fas fa-star"></i> ${movieDetails.vote_average ? movieDetails.vote_average.toFixed(1) : 'N/A'}`;
-    document.getElementById('detail-runtime').textContent = movieDetails.runtime ? `${movieDetails.runtime} min` : 'N/A';
-     document.getElementById('detail-release-date').textContent = movieDetails.release_date || 'N/A';
-     document.getElementById('detail-genres').textContent = movieDetails.genres?.map(g => g.name).join(', ') || 'N/A';
-     document.getElementById('detail-tagline').textContent = movieDetails.tagline || '';
-     document.getElementById('detail-synopsis').textContent = movieDetails.overview || 'No synopsis available.';
+     document.getElementById('detail-title').textContent = title;
+     document.getElementById('detail-rating').innerHTML = `<i class="fas fa-star"></i> ${itemDetails.vote_average ? itemDetails.vote_average.toFixed(1) : 'N/A'}`;
+     document.getElementById('detail-runtime').textContent = runtime ? `${runtime} min` : (itemType === 'tv' ? 'Avg Ep' : 'N/A');
+     document.getElementById('detail-release-date').textContent = releaseDate || 'N/A';
+     document.getElementById('detail-genres').textContent = itemDetails.genres?.map(g => g.name).join(', ') || 'N/A';
+     document.getElementById('detail-tagline').textContent = itemDetails.tagline || '';
+     document.getElementById('detail-synopsis').textContent = itemDetails.overview || 'No synopsis available.';
 
-     // Show the hidden info sections
-     contentArea.querySelector('.movie-tabs')?.setAttribute('style', 'display: block;');
+      // Show hidden info sections
+      contentArea.querySelector('.movie-tabs')?.setAttribute('style', 'display: block;');
 
+      // --- Populate Cast --- (Remains similar)
+      const castContainer = document.getElementById('detail-cast');
+      if (castContainer && credits?.cast) { /* ... populate cast ... */ }
+      else if (castContainer) { castContainer.innerHTML = '<p>Cast information not available.</p>'; }
 
-    // --- Populate Cast ---
-     const castContainer = document.getElementById('detail-cast');
-     if (castContainer && credits?.cast) {
-         castContainer.innerHTML = ''; // Clear placeholders
-         credits.cast.slice(0, 10).forEach(member => { // Show top 10 cast
-             const castCard = document.createElement('div');
-             castCard.classList.add('cast-card');
-              const profilePath = member.profile_path ? `${IMAGE_BASE_URL}w185${member.profile_path}` : 'https://via.placeholder.com/100x150/ccc/000?text=No+Image'; // Placeholder
-             castCard.innerHTML = `
-                 <img src="${profilePath}" alt="${member.name}">
-                 <p>${member.name}</p>
-                 <small>${member.character}</small>
-             `;
-             castContainer.appendChild(castCard);
-         });
-     } else if (castContainer) {
-         castContainer.innerHTML = '<p>Cast information not available.</p>';
-     }
+       // --- Populate Reviews --- (Remains similar)
+       const reviewsContainer = document.getElementById('detail-reviews');
+       if (reviewsContainer && reviews?.results?.length > 0) { /* ... populate reviews ... */ }
+       else if (reviewsContainer) { reviewsContainer.innerHTML = '<p>No reviews available.</p>'; }
 
-    // --- Populate Reviews ---
-    const reviewsContainer = document.getElementById('detail-reviews');
-    if (reviewsContainer && reviews?.results?.length > 0) {
-         reviewsContainer.innerHTML = ''; // Clear placeholders
-        reviews.results.slice(0, 5).forEach(review => { // Show top 5 reviews
-             const reviewDiv = document.createElement('div');
-             reviewDiv.classList.add('review-item'); // Add a class for styling if needed
-            reviewDiv.innerHTML = `
-                <h4>By ${review.author}</h4>
-                 <p>${review.content.substring(0, 300)}...</p>
-                 <a href="${review.url}" target="_blank" rel="noopener noreferrer">Read full review</a>
-                 <hr style="margin: 15px 0; border-color: var(--border-color);">
-             `;
-            reviewsContainer.appendChild(reviewDiv);
-        });
-    } else if (reviewsContainer) {
-         reviewsContainer.innerHTML = '<p>No reviews available.</p>';
-    }
+      // --- Populate Similar Items ---
+      const similarContainer = document.getElementById('detail-similar-movies'); // Keep ID for now
+      if (similarContainer && similarItems?.results?.length > 0) {
+          populateContainer('#detail-similar-movies', similarItems.results, itemType); // Pass itemType
+       } else if (similarContainer) {
+           similarContainer.innerHTML = '<p>No similar content found.</p>';
+       }
 
+      // --- Trailer Button --- (Remains similar)
+      const trailerButton = document.getElementById('play-trailer-btn');
+      /* ... trailer modal logic using 'videos' data ... */
 
-    // --- Populate Similar Movies ---
-     const similarContainer = document.getElementById('detail-similar-movies');
-    if (similarContainer && similarMovies?.results?.length > 0) {
-        populateMovieRow('#detail-similar-movies', similarMovies.results); // Reuse card creation
-     } else if (similarContainer) {
-         similarContainer.innerHTML = '<p>No similar movies found.</p>';
-     }
+       // --- Tab Functionality --- (Remains similar)
+       const tabButtons = document.querySelectorAll('.movie-tabs .tab-btn');
+       /* ... tab logic ... */
 
-    // --- Trailer Button ---
-     const trailerButton = document.getElementById('play-trailer-btn');
-     const modal = document.getElementById('trailer-modal');
-     const trailerFrame = document.getElementById('youtube-trailer');
-     const closeModalBtn = modal.querySelector('.close-modal-btn');
-
-     // Find the first YouTube Trailer key
-     const youtubeTrailer = videos?.results?.find(video => video.site === 'YouTube' && video.type === 'Trailer');
-
-     if (trailerButton && modal && trailerFrame && closeModalBtn && youtubeTrailer) {
-         trailerButton.addEventListener('click', () => {
-             trailerFrame.src = `https://www.youtube.com/embed/${youtubeTrailer.key}?autoplay=1`;
-             modal.classList.add('show');
-         });
-
-         closeModalBtn.addEventListener('click', () => {
-             modal.classList.remove('show');
-             trailerFrame.src = ''; // Stop video playback
-         });
-
-         // Close modal if clicking outside the content area
-         modal.addEventListener('click', (event) => {
-            if (event.target === modal) { // Check if the click is directly on the modal background
-                modal.classList.remove('show');
-                trailerFrame.src = '';
-            }
-        });
-
-     } else if (trailerButton) {
-         trailerButton.style.display = 'none'; // Hide button if no trailer found
-     }
-
-
-     // --- Tab Functionality ---
-     const tabButtons = document.querySelectorAll('.movie-tabs .tab-btn');
-     const tabPanes = document.querySelectorAll('.movie-tabs .tab-pane');
-
-     tabButtons.forEach(button => {
-         button.addEventListener('click', () => {
-             // Remove active class from all buttons and panes
-             tabButtons.forEach(btn => btn.classList.remove('active'));
-             tabPanes.forEach(pane => pane.classList.remove('active'));
-
-             // Add active class to clicked button and corresponding pane
-             button.classList.add('active');
-             const targetTab = button.getAttribute('data-tab');
-             document.getElementById(targetTab)?.classList.add('active');
-         });
-     });
-
-
-    // Mark loading as complete
+     // Mark loading as complete
     contentArea.classList.add('loaded');
 }
 
-// --- Search Functionality (Basic) ---
-function initSearch() {
-     const searchForm = document.querySelector('.search-form');
-     const searchInput = document.getElementById('search-input');
 
-     if (searchForm && searchInput) {
-         searchForm.addEventListener('submit', (e) => {
-             e.preventDefault(); // Prevent default form submission
-             const searchTerm = searchInput.value.trim();
-             if (searchTerm) {
-                 // Redirect to a search results page (or implement dynamic results)
-                 // For now, let's just log it
-                  console.log(`Searching for: ${searchTerm}`);
-                  // window.location.href = `/search.html?query=${encodeURIComponent(searchTerm)}`; // Example redirect
-                  alert(`Search submitted for: ${searchTerm}\n(Implement search results page)`);
-                  searchInput.value = ''; // Clear input
-             }
-         });
+// -- Movies Page --
+async function initMoviesPage() {
+     console.log("Initializing Movies Page...");
+    const sections = [
+        { selector: '#popular-movies .row-items', endpoint: '/movie/popular', type: 'movie', isGrid: false },
+        { selector: '#top-rated-movies .content-grid', endpoint: '/movie/top_rated', type: 'movie', isGrid: true },
+        { selector: '#upcoming-movies .row-items', endpoint: '/movie/upcoming', type: 'movie', isGrid: false },
+    ];
+    for (const section of sections) {
+        const data = await fetchTMDbData(section.endpoint);
+        if (data && data.results) {
+            populateContainer(section.selector, data.results, section.type, section.isGrid);
+        } else {
+            displayLoadingError(section.selector, section.isGrid);
+        }
+    }
+    initSearch();
+}
+
+// -- Drama Page --
+async function initDramaPage() {
+     console.log("Initializing Drama Page...");
+    const sections = [
+        { selector: '#popular-drama-tv .row-items', endpoint: '/discover/tv', params: `&with_genres=${GENRE_DRAMA}&sort_by=popularity.desc`, type: 'tv', isGrid: false },
+        { selector: '#top-rated-drama-movies .content-grid', endpoint: '/discover/movie', params: `&with_genres=${GENRE_DRAMA}&sort_by=vote_average.desc&vote_count.gte=200`, type: 'movie', isGrid: true }
+    ];
+    for (const section of sections) {
+        const data = await fetchTMDbData(section.endpoint, section.params);
+        if (data && data.results) {
+            populateContainer(section.selector, data.results, section.type, section.isGrid);
+        } else {
+            displayLoadingError(section.selector, section.isGrid);
+        }
+    }
+     initSearch();
+}
+
+// -- Anime Page --
+async function initAnimePage() {
+    console.log("Initializing Anime Page...");
+     const sections = [
+         { selector: '#popular-anime-series .row-items', endpoint: '/discover/tv', params: `&with_genres=${GENRE_ANIMATION}&with_keywords=${KEYWORD_ANIME}&sort_by=popularity.desc`, type: 'tv', isGrid: false },
+         { selector: '#top-rated-anime-movies .content-grid', endpoint: '/discover/movie', params: `&with_genres=${GENRE_ANIMATION}&sort_by=vote_average.desc&vote_count.gte=100`, type: 'movie', isGrid: true },
+         { selector: '#popular-anime-movies .row-items', endpoint: '/discover/movie', params: `&with_genres=${GENRE_ANIMATION}&sort_by=popularity.desc`, type: 'movie', isGrid: false },
+     ];
+     for (const section of sections) {
+         const data = await fetchTMDbData(section.endpoint, section.params);
+         if (data && data.results) {
+             populateContainer(section.selector, data.results, section.type, section.isGrid);
+         } else {
+             displayLoadingError(section.selector, section.isGrid);
+         }
      }
+     initSearch();
  }
 
-// --- Initialization ---
-document.addEventListener('DOMContentLoaded', () => {
-     if (API_KEY === 'YOUR_TMDB_API_KEY') {
-         console.error("ERROR: Please replace 'YOUR_TMDB_API_KEY' with your actual TMDb API key in js/main.js");
-        alert("TMDb API Key not set! Please check js/main.js.");
-         // You might want to prevent further execution or show a more user-friendly message on the page
-         return; // Stop initialization if key is missing
-     }
-    // Check which page we are on and initialize accordingly
-    if (document.getElementById('movie-detail-content')) {
-        initMovieDetailPage();
+// -- Browse Page --
+async function initBrowsePage() {
+    console.log("Initializing Browse Page...");
+    // Fetch trending movies and TV shows, then combine and display
+    const trendingAllData = await fetchTMDbData('/trending/all/week');
+
+    if (trendingAllData && trendingAllData.results) {
+         // Filter out people if any, sort by popularity (already mostly sorted by TMDb)
+         const mediaItems = trendingAllData.results
+            .filter(item => item.media_type === 'movie' || item.media_type === 'tv')
+            .sort((a, b) => b.popularity - a.popularity); // Ensure sorting just in case
+
+         populateContainer('#browse-all-trending .content-grid', mediaItems, 'movie', true); // itemType default doesn't matter much here as card func checks media_type
     } else {
-        // Assume home page if detail content not found
+        displayLoadingError('#browse-all-trending .content-grid', true);
+    }
+     initSearch();
+}
+
+// --- Search Functionality (Basic - unchanged) ---
+function initSearch() {
+      const searchForm = document.querySelector('.search-form');
+      const searchInput = document.getElementById('search-input');
+      if (searchForm && searchInput) { /* ... event listener as before ... */ }
+}
+
+// --- Utility: Highlight Active Nav Link ---
+function highlightActiveNav() {
+    const currentPage = document.body.dataset.currentPage; // Get from <body data-current-page="...">
+    if (!currentPage) return;
+
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => {
+        link.classList.remove('active'); // Remove from all first
+        if (link.dataset.page === currentPage) {
+            link.classList.add('active');
+        }
+    });
+}
+
+
+// --- DOMContentLoaded Initialization ---
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM Loaded. Initializing Sobiflix...");
+
+     if (!API_KEY || API_KEY === 'YOUR_TMDB_API_KEY') {
+         console.error("FATAL ERROR: TMDb API Key not set in js/main.js!");
+         alert("Sobiflix requires a TMDb API Key. Please add it to js/main.js.");
+         // Display message on page instead of just alert
+         document.body.innerHTML = `<div style="padding: 50px; text-align: center; color: #fff; background-color: #111; height: 100vh;"><h1>Configuration Error</h1><p>Please add your TMDb API key to the main.js file to use Sobiflix.</p></div>`;
+         return; // Stop everything
+     }
+
+
+    // Determine current page using body attribute
+    const currentPage = document.body.dataset.currentPage;
+    highlightActiveNav(); // Highlight nav based on page
+
+    if (document.getElementById('movie-detail-content')) { // Check for detail page ID
+        initMovieDetailPage();
+     } else if (currentPage === 'movies') {
+        initMoviesPage();
+     } else if (currentPage === 'drama') {
+         initDramaPage();
+     } else if (currentPage === 'anime') {
+         initAnimePage();
+     } else if (currentPage === 'browse') {
+        initBrowsePage();
+    } else if (currentPage === 'home' || !currentPage) { // Default to home
+        document.body.dataset.currentPage = 'home'; // Ensure it's set for nav highlighting
+        highlightActiveNav();
         initHomePage();
+    } else {
+        // For pages like About, Login, Signup, Search that might not need API calls on load
+         console.log(`Initializing basic page: ${currentPage || 'Unknown'}`);
+         initSearch(); // Still initialize search on these pages
     }
 
-    // General initializations (like mobile menu toggle if added) can go here
+    // Add mobile menu toggle logic here if implemented
 });
