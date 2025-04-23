@@ -991,3 +991,57 @@ hr.title-hr {
         font-size: 2em;
     }
 }
+
+/* --- Watchlist Button Styling --- */
+.watchlist-btn {
+    /* ... existing styles ... */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+    font-size: 0.9em; /* Adjust icon size slightly if needed */
+}
+
+.watchlist-btn i {
+    transition: transform 0.3s ease; /* Animate icon change */
+}
+
+.watchlist-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Subtle hover */
+}
+
+/* Style for when the item IS in the watchlist */
+.watchlist-btn.added {
+    background-color: var(--primary-accent); /* Use accent color */
+    color: #fff; /* White icon */
+}
+.watchlist-btn.added:hover {
+     background-color: #ff1a1a; /* Darker accent on hover */
+}
+
+.watchlist-btn.added i {
+    transform: scale(1.1); /* Optional: slightly larger icon when added */
+}
+.watchlist-btn.added i::before {
+    /* This is handled by changing the class in JS now (fas fa-check / fas fa-plus) */
+    /* content: "\f00c"; Font Awesome checkmark */
+}
+
+
+/* Optional: Add a small animation */
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.watchlist-btn.added i {
+    /* animation: pop 0.3s ease-out; Uncomment if desired */
+}
+
+/* --- Card Meta Styles (Rating/Year) --- */
+.card-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 0.85em;
+    margin-bottom: 8px;
+    color: var(--text-color-darker);
+}
+.card-meta .rating i { color: #f5c518; }
