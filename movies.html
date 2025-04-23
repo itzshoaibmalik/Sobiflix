@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies - Sobiflix</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body data-current-page="movies"> <!-- Add data-attribute for JS -->
+    <header class="site-header">
+        <nav class="container">
+            <a href="index.html" class="logo">Sobiflix</a>
+            <!-- Updated Nav Links -->
+             <ul class="nav-links">
+                 <li><a href="index.html" data-page="home">Home</a></li>
+                 <li><a href="movies.html" data-page="movies">Movies</a></li>
+                 <li><a href="drama.html" data-page="drama">Drama</a></li>
+                 <li><a href="anime.html" data-page="anime">Anime</a></li>
+                 <li><a href="browse.html" data-page="browse">Browse</a></li>
+                 <li><a href="about.html" data-page="about">About Us</a></li>
+             </ul>
+            <button class="mobile-menu-btn" aria-label="Toggle Menu"><i class="fas fa-bars"></i></button>
+            <div class="nav-actions">
+                <form action="#" class="search-form">
+                    <input type="search" placeholder="Search..." aria-label="Search" id="search-input">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
+                <a href="login.html" class="btn btn-secondary">Login</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container page-content">
+        <h1>Movies</h1>
+        <hr class="title-hr">
+
+        <!-- Popular Movies Row -->
+         <section class="content-row" id="popular-movies">
+            <h2>Popular Movies</h2>
+             <div class="row-items-container">
+                 <div class="row-items loading">
+                     <div class="skeleton-card"></div> <div class="skeleton-card"></div> <div class="skeleton-card"></div> <div class="skeleton-card"></div> <div class="skeleton-card"></div>
+                 </div>
+             </div>
+        </section>
+
+        <!-- Top Rated Movies Grid -->
+        <section class="content-grid-section" id="top-rated-movies">
+            <h2>Top Rated Movies</h2>
+            <div class="content-grid loading">
+                 <div class="skeleton-card"></div> <div class="skeleton-card"></div> <div class="skeleton-card"></div> <div class="skeleton-card"></div>
+                 <div class="skeleton-card"></div> <div class="skeleton-card"></div> <div class="skeleton-card"></div> <div class="skeleton-card"></div>
+            </div>
+        </section>
+
+         <!-- Upcoming Movies Row -->
+         <section class="content-row" id="upcoming-movies">
+             <h2>Upcoming Movies</h2>
+              <div class="row-items-container">
+                  <div class="row-items loading">
+                      <div class="skeleton-card"></div> <div class="skeleton-card"></div> <div class="skeleton-card"></div> <div class="skeleton-card"></div> <div class="skeleton-card"></div>
+                  </div>
+              </div>
+         </section>
+
+    </main>
+
+    <footer class="site-footer">
+         <!-- Standard Footer (copy from index.html) -->
+          <div class="container"> ... <!-- Copy footer content here --> </div>
+    </footer>
+    <script src="js/main.js"></script>
+</body>
+</html>

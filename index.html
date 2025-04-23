@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobiflix - Watch Movies, Anime, Drama Online</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Font Awesome -->
+</head>
+<body>
+    <header class="site-header">
+        <nav class="container">
+            <a href="index.html" class="logo">
+                <!-- <img src="images/sobiflix-logo.png" alt="Sobiflix Logo"> Optionally use an image -->
+                Sobiflix
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" data-page="home">Home</a></li>
+                <li><a href="movies.html" data-page="movies">Movies</a></li>
+                 <li><a href="drama.html" data-page="drama">Drama</a></li>
+                 <li><a href="anime.html" data-page="anime">Anime</a></li>
+                 <li><a href="browse.html" data-page="browse">Browse</a></li>
+                 <li><a href="about.html" data-page="about">About Us</a></li>
+            </ul>
+             <!-- Mobile Menu Button (requires JS) -->
+            <button class="mobile-menu-btn" aria-label="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-actions">
+                <form action="#" class="search-form">
+                    <input type="search" placeholder="Search titles..." aria-label="Search" id="search-input">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
+                 <!-- Add user icon/dropdown if logged in later -->
+                <a href="login.html" class="btn btn-secondary">Login</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content container">
+                <h1>Your Next Story Awaits.</h1>
+                <p>Endless entertainment. Movies, Anime, Drama, and more.</p>
+                <a href="signup.html" class="btn btn-primary btn-lg">Start Watching</a>
+            </div>
+            <div class="hero-fade"></div> <!-- Optional gradient fade at bottom -->
+        </section>
+
+        <!-- Content rows - These will be populated by JavaScript using TMDb -->
+        <section class="content-row container" id="trending-movies">
+            <h2>Trending Movies</h2>
+            <div class="row-items-container">
+                 <div class="row-items loading"> <!-- Add 'loading' class initially -->
+                    <!-- Skeleton loaders will be placed here by CSS/JS -->
+                     <div class="skeleton-card"></div>
+                     <div class="skeleton-card"></div>
+                     <div class="skeleton-card"></div>
+                     <div class="skeleton-card"></div>
+                     <div class="skeleton-card"></div>
+                 </div>
+            </div>
+             <!-- Movie cards will be dynamically added here by JS -->
+             <!-- Example Card Structure (for reference, JS will create these):
+             <div class="item-card" data-movie-id="123">
+                <img src="https://image.tmdb.org/t/p/w342/poster_path.jpg" alt="Movie Title">
+                <div class="card-overlay">
+                    <button class="watchlist-btn" aria-label="Add to Watchlist"><i class="fas fa-plus"></i></button>
+                    <h3>Movie Title</h3>
+                    <span class="rating"><i class="fas fa-star"></i> 8.5</span>
+                    <p class="quick-synopsis">A brief description appears on hover...</p>
+                     <a href="movie-detail.html?id=123" class="btn btn-primary btn-sm">Details</a>
+                </div>
+             </div>
+             -->
+        </section>
+
+        <section class="content-row container" id="now-playing">
+            <h2>Now Playing in Theaters</h2>
+             <div class="row-items-container">
+                 <div class="row-items loading"> <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div> </div>
+             </div>
+            <!-- JS populates this -->
+        </section>
+
+         <section class="content-row container" id="top-rated-tv">
+            <h2>Top Rated TV Shows</h2>
+             <div class="row-items-container">
+                 <div class="row-items loading"> <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div> </div>
+            </div>
+            <!-- JS populates this -->
+        </section>
+
+         <section class="content-row container" id="upcoming-movies">
+            <h2>Upcoming Movies</h2>
+            <div class="row-items-container">
+                 <div class="row-items loading"> <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div> </div>
+            </div>
+             <!-- JS populates this -->
+        </section>
+
+        <!-- Add more sections for Anime, Drama if TMDb/other APIs provide them easily -->
+
+    </main>
+
+    <footer class="site-footer">
+       <div class="container">
+             <div class="footer-content">
+                 <div class="footer-logo">
+                    <a href="index.html" class="logo">Sobiflix</a>
+                     <p>Your Universe of Stories.</p>
+                 </div>
+                 <div class="footer-nav">
+                     <h4>Navigation</h4>
+                     <a href="index.html">Home</a>
+                     <a href="#">Movies</a>
+                     <a href="#">TV Shows</a>
+                     <a href="about.html">About Us</a>
+                 </div>
+                 <div class="footer-legal">
+                      <h4>Legal</h4>
+                      <a href="#">Terms of Service</a>
+                      <a href="#">Privacy Policy</a>
+                      <a href="#">FAQ</a>
+                 </div>
+                  <div class="footer-social">
+                    <h4>Follow Us</h4>
+                     <div class="social-icons">
+                         <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                         <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                     </div>
+                 </div>
+             </div>
+             <div class="footer-bottom">
+                 <p>© 2023 Sobiflix. All Rights Reserved.</p>
+                  <p class="tmdb-attribution">This product uses the TMDb API but is not endorsed or certified by TMDb.</p> <!-- Important for TMDb -->
+             </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+</body>
+</html>
