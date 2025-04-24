@@ -1045,3 +1045,62 @@ hr.title-hr {
     color: var(--text-color-darker);
 }
 .card-meta .rating i { color: #f5c518; }
+/* --- Auth Buttons Layout --- */
+.auth-actions {
+    display: flex; /* Align items horizontally */
+    align-items: center;
+    gap: 10px; /* Space between buttons */
+}
+.auth-actions .auth-logout i {
+    margin-left: 5px; /* Space between text and icon */
+}
+
+/* Ensure buttons are visible/hidden correctly */
+/* display: none; is handled inline by JS, but have defaults */
+.auth-login, .auth-signup { display: inline-block; }
+.auth-logout { display: none; }
+
+
+/* --- Card adjustments for Watchlist Remove Button --- */
+/* Style for explicit remove button on watchlist page */
+.watchlist-remove-btn {
+    background: rgba(200, 0, 0, 0.7); /* Reddish */
+    border: none;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: absolute; /* Position within card */
+    top: 10px;
+    right: 10px;
+    z-index: 3; /* Above overlay */
+}
+.watchlist-remove-btn:hover {
+     background: rgba(255, 0, 0, 0.9);
+}
+.watchlist-remove-btn i::before {
+     content: "\f1f8"; /* Font Awesome trash icon - ensure FontAwesome linked */
+     font-weight: 900; /* Make sure using solid style if needed */
+}
+
+/* Ensure added state applies correctly to both button types if needed */
+.item-card .watchlist-btn.added i::before {
+     content: "\f00c"; /* Font Awesome checkmark */
+     font-weight: 900;
+}
+
+
+/* --- Login/Signup Form Error Message --- */
+.form-error {
+     font-size: 0.9em;
+     font-weight: bold;
+     color: var(--primary-accent); /* Or your error color */
+     margin-bottom: 15px;
+     text-align: left; /* Or center */
+     display: none; /* Hidden by default */
+}

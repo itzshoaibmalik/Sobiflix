@@ -1,32 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - LumiVerse</title>
     <link rel="stylesheet" href="css/style.css">
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
-     <header class="site-header">
-         <!-- Standard Header like index.html -->
-         <nav class="container">
-            <a href="index.html" class="logo">LumiVerse</a>
+    <header class="site-header">
+        <!-- Standard Header like index.html -->
+        <nav class="container">
+            <a href="index.html" class="logo">Sobiflix</a>
             <ul class="nav-links">
                 <li><a href="index.html" data-page="home">Home</a></li>
                 <li><a href="movies.html" data-page="movies">Movies</a></li>
-                 <li><a href="drama.html" data-page="drama">Drama</a></li>
-                 <li><a href="anime.html" data-page="anime">Anime</a></li>
-                 <li><a href="browse.html" data-page="browse">Browse</a></li>
-                 <li><a href="about.html" data-page="about">About Us</a></li>
+                <li><a href="drama.html" data-page="drama">Drama</a></li>
+                <li><a href="anime.html" data-page="anime">Anime</a></li>
+                <li><a href="browse.html" data-page="browse">Browse</a></li>
+                <li><a href="watchlist.html" data-page="watchlist">Watchlist</a></li> <!-- This link -->
+                <li><a href="about.html" data-page="about">About Us</a></li>
             </ul>
             <div class="nav-actions">
-                 <form action="#" class="search-form">
+                <form action="#" class="search-form">
                     <input type="search" placeholder="Search..." aria-label="Search">
                     <button type="submit"><i class="fas fa-search"></i></button>
                 </form>
-                <a href="login.html" class="btn btn-secondary">Login</a>
-                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+                <div class="nav-actions auth-actions">
+                    <a href="login.html" class="btn btn-secondary auth-login">Login</a>
+                    <a href="signup.html" class="btn btn-primary auth-signup">Sign Up</a>
+                    <button class="btn btn-secondary auth-logout" style="display: none;">Logout <i
+                            class="fas fa-sign-out-alt"></i></button>
+                    <!-- Search Form can still be here if needed -->
+                    <!-- <form class="search-form">...</form> -->
+                </div>
             </div>
         </nav>
     </header>
@@ -37,50 +46,58 @@
 
         <section class="about-section">
             <h2>Our Mission</h2>
-            <p>Sobiflix aims to be your go-to destination for discovering and streaming a diverse range of movies, captivating dramas, and exciting anime. We want to create a seamless and visually appealing platform for entertainment lovers.</p>
+            <p>Sobiflix aims to be your go-to destination for discovering and streaming a diverse range of movies,
+                captivating dramas, and exciting anime. We want to create a seamless and visually appealing platform for
+                entertainment lovers.</p>
         </section>
 
         <section class="about-section">
             <h2>What We Offer</h2>
-             <ul>
+            <ul>
                 <li>A curated selection of Movies, Anime, and Dramas powered by the TMDb API.</li>
-                <li>High-definition streaming integration capability (Note: Actual streaming not implemented in this example).</li>
+                <li>High-definition streaming integration capability (Note: Actual streaming not implemented in this
+                    example).</li>
                 <li>Constantly updated content like Trending, Now Playing, and Top Rated titles.</li>
                 <li>A user-friendly interface designed for easy browsing and discovery.</li>
             </ul>
         </section>
 
         <section class="about-section">
-             <h2>About the Creator</h2>
-             <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-                 <!-- You can add an image here if you want -->
-                 <!-- <img src="images/your-photo.jpg" alt="Shoaib Malik" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;"> -->
-                 <div>
+            <h2>About the Creator</h2>
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <!-- You can add an image here if you want -->
+                <!-- <img src="images/your-photo.jpg" alt="Shoaib Malik" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;"> -->
+                <div>
                     <p>Hi! I'm <strong>Shoaib Malik</strong>, the creator behind this Sobiflix concept.</p>
-                    <p>I'm currently a first-year undergraduate student pursuing my passion for technology at <strong>Chitkara University</strong>. This project is an exploration of front-end development, UI/UX design, and working with external APIs like TMDb.</p>
-                    <p>I'm constantly learning and exploring new technologies to build engaging and functional web experiences. Feel free to connect!</p>
-                     <!-- Add links to portfolio/LinkedIn if desired -->
-                 </div>
-             </div>
+                    <p>I'm currently a first-year undergraduate student pursuing my passion for technology at
+                        <strong>Chitkara University</strong>. This project is an exploration of front-end development,
+                        UI/UX design, and working with external APIs like TMDb.</p>
+                    <p>I'm constantly learning and exploring new technologies to build engaging and functional web
+                        experiences. Feel free to connect!</p>
+                    <!-- Add links to portfolio/LinkedIn if desired -->
+                </div>
+            </div>
         </section>
-         <section class="about-section">
+        <section class="about-section">
             <h2>Technology Stack (Concept)</h2>
             <p>This demonstration utilizes:</p>
-             <ul>
+            <ul>
                 <li>HTML5 for structure.</li>
                 <li>CSS3 for styling, including modern layouts like Flexbox and Grid.</li>
                 <li>Vanilla JavaScript for DOM manipulation and API interactions.</li>
-                <li><a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">The Movie Database (TMDb) API</a> for fetching movie and TV show data.</li>
+                <li><a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">The Movie Database
+                        (TMDb) API</a> for fetching movie and TV show data.</li>
                 <li>Font Awesome for icons.</li>
-             </ul>
-             <p><em>Note: This is a front-end concept and does not include backend authentication, database storage, or actual video streaming infrastructure.</em></p>
+            </ul>
+            <p><em>Note: This is a front-end concept and does not include backend authentication, database storage, or
+                    actual video streaming infrastructure.</em></p>
         </section>
 
 
     </main>
-     <footer class="site-footer">
-         <!-- Standard Footer like index.html -->
-          <div class="container">
+    <footer class="site-footer">
+        <!-- Standard Footer like index.html -->
+        <div class="container">
             <div class="footer-links">
                 <a href="about.html">About Us</a>
                 <a href="#">Contact</a>
@@ -97,4 +114,5 @@
         </div>
     </footer>
 </body>
+
 </html>

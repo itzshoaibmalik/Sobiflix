@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Watchlist - Sobiflix</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body data-current-page="watchlist"> <!-- Identify page -->
+    <header class="site-header">
+        <nav class="container">
+            <a href="index.html" class="logo">Sobiflix</a>
+             <ul class="nav-links">
+                 <li><a href="index.html" data-page="home">Home</a></li>
+                 <li><a href="movies.html" data-page="movies">Movies</a></li>
+                 <li><a href="drama.html" data-page="drama">Drama</a></li>
+                 <li><a href="anime.html" data-page="anime">Anime</a></li>
+                 <li><a href="browse.html" data-page="browse">Browse</a></li>
+                 <li><a href="watchlist.html" data-page="watchlist">Watchlist</a></li> <!-- Watchlist Link -->
+                 <li><a href="about.html" data-page="about">About Us</a></li>
+             </ul>
+             <button class="mobile-menu-btn" aria-label="Toggle Menu"><i class="fas fa-bars"></i></button>
+             <div class="nav-actions auth-actions"> <!-- Auth buttons container -->
+                 <a href="login.html" class="btn btn-secondary auth-login">Login</a>
+                 <a href="signup.html" class="btn btn-primary auth-signup">Sign Up</a>
+                 <button class="btn btn-secondary auth-logout" style="display: none;">Logout <i class="fas fa-sign-out-alt"></i></button>
+             </div>
+        </nav>
+    </header>
+
+    <main class="container page-content">
+        <h1>My Watchlist</h1>
+        <hr class="title-hr">
+
+        <section class="content-grid-section" id="watchlist-items">
+             <!-- Login Prompt (shown by JS if not logged in) -->
+            <div class="login-prompt" style="display:none; text-align: center; padding: 30px; background-color: var(--secondary-bg); border-radius: 8px;">
+                <h2>Please Log In</h2>
+                <p>Log in to view and manage your watchlist.</p>
+                <a href="login.html" class="btn btn-primary" style="margin-top: 15px;">Go to Login</a>
+            </div>
+
+             <!-- Watchlist grid (populated by JS) -->
+            <div class="content-grid loading" id="watchlist-grid">
+                 <!-- Skeleton loaders initially -->
+                  <div class="skeleton-card"></div> <div class="skeleton-card"></div> <div class="skeleton-card"></div>
+            </div>
+            <!-- Empty Message (shown by JS if logged in & list is empty) -->
+            <div class="empty-watchlist-message" style="display: none; text-align: center; padding: 30px;">
+                 <p>Your watchlist is empty. Start adding movies and shows!</p>
+                 <a href="browse.html" class="btn btn-primary" style="margin-top: 15px;">Browse Content</a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+         <div class="container">
+             <!-- Standard Footer Content -->
+             <div class="footer-content">...</div>
+             <div class="footer-bottom">...</div>
+         </div>
+    </footer>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -12,20 +12,23 @@
          <nav class="container">
              <a href="index.html" class="logo">Sobiflix</a>
             <!-- Updated Nav Links -->
-             <ul class="nav-links">
+            <ul class="nav-links">
                 <li><a href="index.html" data-page="home">Home</a></li>
-                 <li><a href="movies.html" data-page="movies">Movies</a></li>
-                 <li><a href="drama.html" data-page="drama">Drama</a></li>
-                 <li><a href="anime.html" data-page="anime">Anime</a></li>
-                 <li><a href="browse.html" data-page="browse">Browse</a></li>
-                 <li><a href="about.html" data-page="about">About Us</a></li>
+                <li><a href="movies.html" data-page="movies">Movies</a></li>
+                <li><a href="drama.html" data-page="drama">Drama</a></li>
+                <li><a href="anime.html" data-page="anime">Anime</a></li>
+                <li><a href="browse.html" data-page="browse">Browse</a></li>
+                <li><a href="watchlist.html" data-page="watchlist">Watchlist</a></li> <!-- This link -->
+                <li><a href="about.html" data-page="about">About Us</a></li>
             </ul>
             <button class="mobile-menu-btn" aria-label="Toggle Menu"><i class="fas fa-bars"></i></button>
-            <div class="nav-actions">
-                 <!-- Search, Login, Signup buttons -->
-                  <form action="#" class="search-form"><input type="search" id="search-input"...></form>
-                  <a href="login.html" class="btn btn-secondary">Login</a> <a href="signup.html" class="btn btn-primary">Sign Up</a>
-             </div>
+            <div class="nav-actions auth-actions">
+                <a href="login.html" class="btn btn-secondary auth-login">Login</a>
+                <a href="signup.html" class="btn btn-primary auth-signup">Sign Up</a>
+                <button class="btn btn-secondary auth-logout" style="display: none;">Logout <i class="fas fa-sign-out-alt"></i></button>
+                <!-- Search Form can still be here if needed -->
+                <!-- <form class="search-form">...</form> -->
+            </div>
         </nav>
     </header>
 
