@@ -1099,3 +1099,16 @@ hr.title-hr {
      text-align: left; /* Or center */
      display: none; /* Hidden by default */
 }
+/* --- Filter Styles --- */
+.filter-container select {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+    font-size: 0.95em;
+}
+.filter-container select:focus {
+     outline: none;
+     border-color: var(--primary-accent);
+}

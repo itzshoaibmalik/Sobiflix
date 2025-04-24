@@ -36,6 +36,24 @@
         <h1>Browse All Trending</h1>
         <hr class="title-hr">
 
+            <!-- START Genre Filter -->
+            <div class="filter-container" style="margin-bottom: 25px;">
+                 <label for="genre-filter" style="margin-right: 10px; font-weight: bold;">Filter by Genre:</label>
+                 <select id="genre-filter" name="genre">
+                     <option value="">All Genres</option>
+                     <!-- Options will be populated by JS -->
+                 </select>
+             </div>
+            <!-- END Genre Filter -->
+        
+            <hr class="title-hr">
+            <section class="content-grid-section" id="browse-all-trending">
+                 <h2>Movies & TV Shows</h2>
+                 <div class="content-grid loading" id="browse-grid"> <!-- Change ID -->
+                    <!-- Skeletons -->
+                 </div>
+            </section>
+        </main>
         <!-- Combined Trending Grid -->
          <section class="content-grid-section" id="browse-all-trending">
              <h2>Movies & TV Shows</h2>
