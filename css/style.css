@@ -948,9 +948,7 @@ ul {
 
 
 /* Adjust loading state for grid */
-.content-grid.loading {
-     /* Grid styles apply */
- }
+
 
 .content-grid .no-results,
 .content-grid .error {
@@ -1020,10 +1018,9 @@ hr.title-hr {
     transform: scale(1.1); /* Optional: slightly larger icon when added */
 }
 .watchlist-btn.added i::before {
-    /* This is handled by changing the class in JS now (fas fa-check / fas fa-plus) */
-    /* content: "\f00c"; Font Awesome checkmark */
+    content: "\f00c"; /* Font Awesome checkmark */
+    font-weight: 900; /* Ensure solid style */
 }
-
 
 /* Optional: Add a small animation */
 @keyframes pop {
@@ -1031,9 +1028,7 @@ hr.title-hr {
   50% { transform: scale(1.2); }
   100% { transform: scale(1); }
 }
-.watchlist-btn.added i {
-    /* animation: pop 0.3s ease-out; Uncomment if desired */
-}
+
 
 /* --- Card Meta Styles (Rating/Year) --- */
 .card-meta {
