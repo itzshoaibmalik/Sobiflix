@@ -529,73 +529,196 @@ async function initMovieDetailPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const itemId = urlParams.get('id');
     const itemType = urlParams.get('type') || 'movie';
-     console.log(`[DEBUG] JS: initDetailPage - Item ID: ${itemId}, Item Type: ${itemType}`);
-    if (!itemId) { /* ... error handling ... */ contentArea.innerHTML = '<p class="error container">Error: Item ID not found in URL.</p>'; return; }
+    console.log(`[DEBUG] JS: initDetailPage - Item ID: ${itemId}, Item Type: ${itemType}`);
+    if (!itemId) { contentArea.innerHTML = '<p class="error container">Error: Item ID not found in URL.</p>'; return; }
 
-    contentArea.innerHTML = '<div class="loading-spinner"></div>'; // Reset content area show spinner
+    contentArea.innerHTML = '<div class="loading-spinner"></div>';
 
     try {
-        // Fetch data in parallel (await Promise.all)
-         console.log(`[DEBUG] JS: initDetailPage - Fetching details for ${itemType} ${itemId}...`);
-         const [itemDetails, credits, videos, similarItems, reviews] = await Promise.all([
-             fetchTMDbData(`/${itemType}/${itemId}`),                        // ALREADY HAD AWAIT implicitly via Promise.all
-             fetchTMDbData(`/${itemType}/${itemId}/credits`),                 // ALREADY HAD AWAIT
-             fetchTMDbData(`/${itemType}/${itemId}/videos`),                  // ALREADY HAD AWAIT
-             fetchTMDbData(`/${itemType}/${itemId}/similar`),                 // ALREADY HAD AWAIT
-             fetchTMDbData(`/${itemType}/${itemId}/reviews`)                  // ALREADY HAD AWAIT
-         ]);
-         console.log("[DEBUG] JS: initDetailPage - All detail fetches complete.");
-         console.log("[DEBUG] JS: Fetched Details Data:", itemDetails); // Log fetched details specifically
-
+        console.log(`[DEBUG] JS: initDetailPage - Fetching details for ${itemType} ${itemId}...`);
+        const [itemDetails, credits, videos, similarItems, reviews] = await Promise.all([
+            fetchTMDbData(`/${itemType}/${itemId}`),
+            fetchTMDbData(`/${itemType}/${itemId}/credits`),
+            fetchTMDbData(`/${itemType}/${itemId}/videos`),
+            fetchTMDbData(`/${itemType}/${itemId}/similar`),
+            fetchTMDbData(`/${itemType}/${itemId}/reviews`)
+        ]);
+        console.log("[DEBUG] JS: initDetailPage - All detail fetches complete.");
 
         if (!itemDetails) {
-             console.error(`[DEBUG] JS: initDetailPage - Failed to fetch essential itemDetails for ${itemId}.`);
-             contentArea.innerHTML = '<p class="error container">Error: Could not load item details.</p>';
-             contentArea.classList.add('loaded'); return; // Mark as loaded (with error)
-         }
+            console.error(`[DEBUG] JS: initDetailPage - Failed to fetch essential itemDetails for ${itemId}.`);
+            contentArea.innerHTML = '<p class="error container">Error: Could not load item details.</p>';
+            contentArea.classList.add('loaded');
+            return;
+        }
 
-        // Re-insert the HTML structure (as before)
-         console.log("[DEBUG] JS: initDetailPage - Re-inserting HTML structure...");
-         contentArea.innerHTML = `...`; // PASTE THE FULL DETAIL PAGE HTML STRUCTURE HERE
+        // Re-insert the HTML structure
+        console.log("[DEBUG] JS: initDetailPage - Re-inserting HTML structure...");
+        contentArea.innerHTML = `
+            <section class="movie-backdrop" style="background-image: url('${itemDetails.backdrop_path ? IMAGE_BASE_URL + BACKDROP_SIZE + itemDetails.backdrop_path : ''}');">
+                <div class="backdrop-overlay"></div>
+                <div class="detail-header container">
+                    <div class="poster-container">
+                        <img src="${itemDetails.poster_path ? IMAGE_BASE_URL + POSTER_SIZE_DETAIL + itemDetails.poster_path : 'images/placeholder-poster.png'}" alt="${itemDetails.title || itemDetails.name}" id="detail-poster">
+                    </div>
+                    <div class="detail-info">
+                        <h1 id="detail-title">${itemDetails.title || itemDetails.name}</h1>
+                        <div class="meta-info">
+                            <span class="rating" id="detail-rating"><i class="fas fa-star"></i> ${itemDetails.vote_average?.toFixed(1) || 'N/A'}</span>
+                            <span class="separator">|</span>
+                            <span id="detail-runtime">${itemDetails.runtime || itemDetails.episode_run_time?.[0] || 0} min</span>
+                            <span class="separator">|</span>
+                            <span id="detail-release-date">${itemDetails.release_date || itemDetails.first_air_date || 'N/A'}</span>
+                            <span class="separator">|</span>
+                            <span id="detail-genres">${itemDetails.genres?.map(g => g.name).join(', ') || 'N/A'}</span>
+                        </div>
+                        <p class="tagline" id="detail-tagline">${itemDetails.tagline || ''}</p>
+                        <h2>Overview</h2>
+                        <p class="synopsis" id="detail-synopsis">${itemDetails.overview || 'No overview available.'}</p>
+                        <div class="detail-actions">
+                            <button class="btn btn-primary btn-lg" id="play-trailer-btn"><i class="fas fa-play"></i> Play Trailer</button>
+                            <button class="btn btn-secondary watchlist-btn"><i class="fas fa-plus"></i> Add to Watchlist</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        // --- Populate Details --- (as before, using setText, setHTML helpers)
-         console.log("[DEBUG] JS: initDetailPage - Populating static details...");
-         // ... (code to populate title, rating, runtime, date, genres, tagline, synopsis) ...
+            <section class="movie-tabs container">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="cast">Cast</button>
+                    <button class="tab-btn" data-tab="reviews">Reviews</button>
+                    <button class="tab-btn" data-tab="similar">Similar ${itemType === 'movie' ? 'Movies' : 'Shows'}</button>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="cast">
+                        <h3>Top Billed Cast</h3>
+                        <div class="cast-list" id="detail-cast"></div>
+                    </div>
+                    <div class="tab-pane" id="reviews">
+                        <h3>Reviews</h3>
+                        <div id="detail-reviews"></div>
+                    </div>
+                    <div class="tab-pane" id="similar">
+                        <h3>Similar ${itemType === 'movie' ? 'Movies' : 'Shows'}</h3>
+                        <div class="row-items" id="detail-similar-movies"></div>
+                    </div>
+                </div>
+            </section>
 
-        // --- Populate Cast --- (as before)
-         console.log("[DEBUG] JS: initDetailPage - Populating cast...");
-         // ... (code to populate cast) ...
+            <div class="modal" id="trailer-modal">
+                <div class="modal-content">
+                    <span class="close-modal-btn">×</span>
+                    <div class="video-container">
+                        <iframe id="youtube-trailer" width="560" height="315" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        `;
 
-        // --- Populate Similar Items --- (as before)
-         console.log("[DEBUG] JS: initDetailPage - Populating similar items...");
-         // ... (code to populate similar items using populateContainer) ...
+        // Populate Cast
+        console.log("[DEBUG] JS: initDetailPage - Populating cast...");
+        const castContainer = document.getElementById('detail-cast');
+        if (castContainer && credits?.cast) {
+            const topCast = credits.cast.slice(0, 6);
+            castContainer.innerHTML = topCast.map(actor => `
+                <div class="cast-card">
+                    <img src="${actor.profile_path ? IMAGE_BASE_URL + 'w185' + actor.profile_path : 'images/placeholder-profile.png'}" alt="${actor.name}">
+                    <p>${actor.name}</p>
+                    <small>${actor.character}</small>
+                </div>
+            `).join('');
+        }
 
-         // --- Populate Reviews --- (as before)
-          console.log("[DEBUG] JS: initDetailPage - Populating reviews...");
-         // ... (code to populate reviews) ...
+        // Populate Similar Items
+        console.log("[DEBUG] JS: initDetailPage - Populating similar items...");
+        const similarContainer = document.getElementById('detail-similar-movies');
+        if (similarContainer && similarItems?.results) {
+            populateContainer('#detail-similar-movies', similarItems.results.slice(0, 6), itemType);
+        }
 
+        // Populate Reviews
+        console.log("[DEBUG] JS: initDetailPage - Populating reviews...");
+        const reviewsContainer = document.getElementById('detail-reviews');
+        if (reviewsContainer && reviews?.results) {
+            if (reviews.results.length > 0) {
+                reviewsContainer.innerHTML = reviews.results.slice(0, 3).map(review => `
+                    <div class="review-card">
+                        <div class="review-header">
+                            <h4>${review.author}</h4>
+                            <span class="rating"><i class="fas fa-star"></i> ${review.author_details.rating || 'N/A'}</span>
+                        </div>
+                        <p>${review.content}</p>
+                    </div>
+                `).join('');
+            } else {
+                reviewsContainer.innerHTML = '<p>No reviews available.</p>';
+            }
+        }
 
-        // --- Setup Detail Watchlist Button ---
-         console.log("[DEBUG] JS: initDetailPage - Setting up detail watchlist button...");
-         // ... (code to find button, call updateWatchlistButtonUI, add listener) ...
+        // Setup Detail Watchlist Button
+        console.log("[DEBUG] JS: initDetailPage - Setting up detail watchlist button...");
+        const watchlistBtn = contentArea.querySelector('.watchlist-btn');
+        if (watchlistBtn) {
+            updateWatchlistButtonUI(watchlistBtn, itemId, itemType);
+            watchlistBtn.addEventListener('click', () => {
+                const isInList = isItemInWatchlist(itemId, itemType);
+                if (isInList) {
+                    removeFromWatchlist(itemId, itemType);
+                } else {
+                    addToWatchlist(itemId, itemType, itemDetails.title || itemDetails.name, itemDetails.poster_path);
+                }
+                updateWatchlistButtonUI(watchlistBtn, itemId, itemType);
+            });
+        }
 
-        // --- Trailer Button Logic ---
-         console.log("[DEBUG] JS: initDetailPage - Setting up trailer button...");
-         // ... (code to find trailer, setup modal listeners) ...
+        // Trailer Button Logic
+        console.log("[DEBUG] JS: initDetailPage - Setting up trailer button...");
+        const trailerBtn = document.getElementById('play-trailer-btn');
+        const trailerModal = document.getElementById('trailer-modal');
+        const closeModalBtn = trailerModal?.querySelector('.close-modal-btn');
+        const trailerFrame = document.getElementById('youtube-trailer');
 
-        // --- Tab Functionality ---
-         console.log("[DEBUG] JS: initDetailPage - Setting up tabs...");
-         // ... (code to add tab listeners) ...
+        if (trailerBtn && trailerModal && closeModalBtn && trailerFrame && videos?.results) {
+            const trailer = videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+            if (trailer) {
+                trailerBtn.addEventListener('click', () => {
+                    trailerFrame.src = `https://www.youtube.com/embed/${trailer.key}`;
+                    trailerModal.style.display = 'flex';
+                });
+                closeModalBtn.addEventListener('click', () => {
+                    trailerFrame.src = '';
+                    trailerModal.style.display = 'none';
+                });
+            } else {
+                trailerBtn.disabled = true;
+                trailerBtn.title = 'No trailer available';
+            }
+        }
 
-        contentArea.classList.add('loaded'); // Mark loading complete
+        // Tab Functionality
+        console.log("[DEBUG] JS: initDetailPage - Setting up tabs...");
+        const tabButtons = contentArea.querySelectorAll('.tab-btn');
+        const tabPanes = contentArea.querySelectorAll('.tab-pane');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.dataset.tab;
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabPanes.forEach(pane => pane.classList.remove('active'));
+                button.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        contentArea.classList.add('loaded');
         console.log("[DEBUG] JS: Detail Page Population Complete.");
 
     } catch (error) {
-         console.error(`[DEBUG] JS: *** ERROR inside initMovieDetailPage ***:`, error);
-         contentArea.innerHTML = '<p class="error container">An error occurred loading details. Please try again later.</p>'; // User-friendly error
-         contentArea.classList.add('loaded');
+        console.error(`[DEBUG] JS: *** ERROR inside initMovieDetailPage ***:`, error);
+        contentArea.innerHTML = '<p class="error container">An error occurred loading details. Please try again later.</p>';
+        contentArea.classList.add('loaded');
     }
-     console.log("[DEBUG] JS: Initializing Detail Page END");
+    console.log("[DEBUG] JS: Initializing Detail Page END");
 }
 
 async function initWatchlistPage() {
