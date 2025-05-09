@@ -763,29 +763,25 @@ async function initWatchlistPage() {
     console.log("[DEBUG] JS: Initializing Watchlist Page END");
 }
 
-// --- Search Functionality ---
-function initSearch() {
-     console.log("[DEBUG] JS: initSearch - START (attaching listener)");
-     const searchForm = document.querySelector('.search-form');
-     const searchInput = document.getElementById('search-input');
-     if (searchForm && searchInput) {
-          searchForm.addEventListener('submit', (e) => {
-              e.preventDefault();
-              const searchTerm = searchInput.value.trim();
-               console.log(`[DEBUG] JS: Search submitted for: ${searchTerm}`);
-              if (searchTerm) {
-                   alert(`Search for "${searchTerm}" initiated. (Implement results page or dynamic display)`);
-                   // Example Redirect: window.location.href = `/search.html?query=${encodeURIComponent(searchTerm)}`;
-                   searchInput.value = '';
-               }
-          });
-          console.log("[DEBUG] JS: initSearch - Listener attached.");
-      } else {
-          console.warn("[DEBUG] JS: initSearch - Search form or input not found.");
-      }
-      console.log("[DEBUG] JS: initSearch - END");
-  }
+// Search functionality
+function handleSearch(event) {
+    event.preventDefault();
+    const searchInput = document.querySelector('.search-form input');
+    const query = searchInput.value.trim();
+    
+    if (query) {
+        // Redirect to search results page with query parameter
+        window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+    }
+}
 
+// Add search form event listener
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.querySelector('.search-form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', handleSearch);
+    }
+});
 
 // --- General Initialization ---
 console.log("[DEBUG] JS: Defining highlightActiveNav and DOMContentLoaded listener.");
@@ -867,3 +863,84 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 console.log("[DEBUG] JS: Script end.");
+
+// Social Login Handlers
+function handleGoogleLogin() {
+    // For demo purposes, we'll just show a message
+    alert('Google login functionality will be implemented in the future.');
+}
+
+function handleFacebookLogin() {
+    // For demo purposes, we'll just show a message
+    alert('Facebook login functionality will be implemented in the future.');
+}
+
+// Add event listeners for social login buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const googleButtons = document.querySelectorAll('.btn-social.google');
+    const facebookButtons = document.querySelectorAll('.btn-social.facebook');
+
+    googleButtons.forEach(button => {
+        button.addEventListener('click', handleGoogleLogin);
+    });
+
+    facebookButtons.forEach(button => {
+        button.addEventListener('click', handleFacebookLogin);
+    });
+});
+
+// Search Results Page
+function initSearchResults() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q');
+    
+    if (!query) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    const resultsContainer = document.getElementById('search-results');
+    const noResultsDiv = document.getElementById('no-results');
+    
+    if (!resultsContainer || !noResultsDiv) return;
+
+    // Show loading state
+    resultsContainer.innerHTML = '<div class="loading-spinner"></div>';
+
+    // Fetch search results from TMDB
+    fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            resultsContainer.innerHTML = '';
+            
+            if (!data.results || data.results.length === 0) {
+                noResultsDiv.style.display = 'block';
+                return;
+            }
+
+            // Filter and display results
+            const validResults = data.results.filter(item => 
+                (item.media_type === 'movie' || item.media_type === 'tv') && 
+                item.poster_path
+            );
+
+            if (validResults.length === 0) {
+                noResultsDiv.style.display = 'block';
+                return;
+            }
+
+            validResults.forEach(item => {
+                const card = createGenericCard(item);
+                resultsContainer.appendChild(card);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching search results:', error);
+            resultsContainer.innerHTML = '<p class="error">Error loading search results. Please try again later.</p>';
+        });
+}
+
+// Initialize search results page if on search page
+if (window.location.pathname.includes('search.html')) {
+    initSearchResults();
+}

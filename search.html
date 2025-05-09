@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Sobiflix</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="container">
+            <a href="index.html" class="logo">Sobiflix</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="movies.html">Movies</a>
+                <a href="tv-shows.html">TV Shows</a>
+                <a href="anime.html">Anime</a>
+            </div>
+            <div class="nav-actions">
+                <form class="search-form">
+                    <input type="text" placeholder="Search...">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
+                <div class="auth-actions">
+                    <a href="login.html" class="btn btn-secondary auth-login">Login</a>
+                    <a href="signup.html" class="btn btn-primary auth-signup">Sign Up</a>
+                    <button class="btn btn-secondary auth-logout" style="display: none;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="content-grid-section">
+            <h1>Search Results</h1>
+            <hr class="title-hr">
+            <div id="search-results" class="content-grid">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+            <div id="no-results" style="display: none; text-align: center; padding: 2rem;">
+                <h2>No results found</h2>
+                <p>Try different keywords or browse our categories</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-nav">
+                    <h4>Navigation</h4>
+                    <a href="index.html">Home</a>
+                    <a href="movies.html">Movies</a>
+                    <a href="tv-shows.html">TV Shows</a>
+                    <a href="anime.html">Anime</a>
+                </div>
+                <div class="footer-legal">
+                    <h4>Legal</h4>
+                    <a href="about.html">About Us</a>
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms of Service</a>
+                </div>
+                <div class="footer-social">
+                    <h4>Follow Us</h4>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Sobiflix. All rights reserved.</p>
+                <p class="tmdb-attribution">This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html> 
