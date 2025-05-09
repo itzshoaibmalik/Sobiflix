@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - LumiVerse</title>
+    <title>Login - Sobiflix</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body class="auth-page"> <!-- Add class for specific background/styling -->
-    <header class="site-header simple"> <!-- Optional simpler header -->
+<body class="auth-page" data-current-page="login">
+    <header class="site-header simple">
         <nav class="container">
-            <a href="index.html" class="logo">LumiVerse</a>
+            <a href="index.html" class="logo">Sobiflix</a>
             <a href="signup.html" class="btn btn-secondary">Sign Up</a>
         </nav>
     </header>
@@ -20,18 +20,19 @@
     <main class="container auth-container">
         <div class="auth-box">
             <h1>Login</h1>
-            <form action="#" method="post">
+            <form id="login-form" action="#" method="post">
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" name="username" required>
                 </div>
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="password" required>
                 </div>
                 <div class="form-options">
                     <a href="#">Forgot Password?</a>
                 </div>
+                <p id="login-error" class="form-error" style="display: none; color: var(--primary-accent); margin-bottom: 15px;"></p>
                 <button type="submit" class="btn btn-primary btn-block">Login</button>
             </form>
             <p class="auth-switch">Don't have an account? <a href="signup.html">Sign Up</a></p>
@@ -49,20 +50,7 @@
         </div>
     </footer>
 
-    <form id="login-form" action="#" method="post">
-        <div class="form-group">
-            <label for="login-username">Username</label> <!-- Changed ID -->
-            <input type="text" id="login-username" name="username" required>
-        </div>
-        <div class="form-group">
-            <label for="login-password">Password</label> <!-- Changed ID -->
-            <input type="password" id="login-password" name="password" required>
-        </div>
-        <!-- Error message placeholder -->
-        <p id="login-error" class="form-error"
-            style="display: none; color: var(--primary-accent); margin-bottom: 15px;"></p>
-        <button type="submit" class="btn btn-primary btn-block">Login</button>
-    </form>
+    <script src="js/main.js"></script>
 </body>
 
 </html>
