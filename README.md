@@ -1,6 +1,6 @@
 # Sobiflix 🎬
 
-A modern streaming platform interface built with HTML, CSS, and JavaScript, powered by the TMDB API. Sobiflix provides a Netflix-like experience for browsing movies, TV shows, and anime.
+A modern streaming platform interface built with HTML, CSS, and JavaScript. Sobiflix provides a Netflix-like experience for browsing movies, TV shows, and anime.
 
 ![Sobiflix Preview](preview.png)
 
@@ -26,7 +26,7 @@ A modern streaming platform interface built with HTML, CSS, and JavaScript, powe
   - Responsive search with instant results
 
 - **Technical Features**
-  - Integration with TMDB API
+  - RESTful API integration
   - Dynamic content loading
   - Responsive design using CSS Grid and Flexbox
   - Modern JavaScript (ES6+) features
@@ -37,7 +37,7 @@ A modern streaming platform interface built with HTML, CSS, and JavaScript, powe
 - HTML5
 - CSS3 (with CSS Variables, Flexbox, and Grid)
 - Vanilla JavaScript (ES6+)
-- [TMDB API](https://www.themoviedb.org/documentation/api)
+- RESTful APIs
 - Font Awesome Icons
 - Google Fonts
 
@@ -47,7 +47,7 @@ A modern streaming platform interface built with HTML, CSS, and JavaScript, powe
 
 - A modern web browser
 - Basic understanding of HTML, CSS, and JavaScript
-- TMDB API key (get it from [TMDB](https://www.themoviedb.org/documentation/api))
+- Local development environment
 
 ### Installation
 
@@ -61,12 +61,7 @@ A modern streaming platform interface built with HTML, CSS, and JavaScript, powe
    cd sobiflix
    ```
 
-3. Open `js/config.js` and add your TMDB API key:
-   ```javascript
-   const TMDB_API_KEY = 'your_api_key_here';
-   ```
-
-4. Open `index.html` in your browser or use a local server:
+3. Open `index.html` in your browser or use a local server:
    ```bash
    # Using Python
    python -m http.server 8000
@@ -115,14 +110,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- [TMDB](https://www.themoviedb.org/) for providing the API
-- [Font Awesome](https://fontawesome.com/) for the icons
-- [Google Fonts](https://fonts.google.com/) for the typography
+- Font Awesome for the icons
+- Google Fonts for the typography
 
 ## 📞 Contact
 
 For any queries or suggestions, feel free to reach out:
-- Email: [your-email@example.com]
 - Twitter: [@itzshoaibmalik](https://twitter.com/itzshoaibmalik)
 - LinkedIn: [itzshoaibmalik](https://www.linkedin.com/in/itzshoaibmalik)
 
