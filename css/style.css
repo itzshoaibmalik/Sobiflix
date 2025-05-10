@@ -666,7 +666,6 @@ ul {
 }
 
 @media (max-width: 768px) {
-
     /* Adjust header for mobile - hiding links, showing burger */
     .nav-links {
         display: none;
@@ -674,8 +673,15 @@ ul {
     }
 
     .search-form {
-        display: none;
-        /* Simplify header */
+        display: flex;
+        width: 100%;
+        max-width: 200px;
+        margin-right: 10px;
+    }
+
+    .search-form input {
+        width: 100%;
+        font-size: 0.9em;
     }
 
     .site-header nav.container {
