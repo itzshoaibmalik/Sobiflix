@@ -1098,6 +1098,7 @@ ul {
     background: #000;
     border-radius: 8px;
     overflow: hidden;
+    padding: 20px;
 }
 
 .video-container {
@@ -1513,4 +1514,32 @@ hr.title-hr {
     position: relative;
     z-index: 1;
     /* Below overlay interactive elements */
+}
+
+/* Streaming Source Selector */
+.streaming-options {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.streaming-source-btn {
+    padding: 8px 16px;
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.streaming-source-btn:hover {
+    background-color: var(--card-bg);
+}
+
+.streaming-source-btn.active {
+    background-color: var(--primary-accent);
+    border-color: var(--primary-accent);
+    color: #fff;
 }

@@ -619,6 +619,10 @@ async function initMovieDetailPage() {
             <div class="modal" id="streaming-modal">
                 <div class="modal-content">
                     <span class="close-modal-btn">×</span>
+                    <div class="streaming-options">
+                        <button class="streaming-source-btn active" data-source="vidsrc">VidSrc</button>
+                        <button class="streaming-source-btn" data-source="autoembed">AutoEmbed</button>
+                    </div>
                     <div class="video-container">
                         <iframe id="streaming-frame" width="560" height="315" src="" title="Movie Player" frameborder="0" allowfullscreen></iframe>
                     </div>
@@ -694,15 +698,39 @@ async function initMovieDetailPage() {
         const streamingModal = document.getElementById('streaming-modal');
         const streamingCloseBtn = streamingModal?.querySelector('.close-modal-btn');
         const streamingFrame = document.getElementById('streaming-frame');
+        const streamingSourceBtns = streamingModal?.querySelectorAll('.streaming-source-btn');
 
         if (watchMovieBtn && streamingModal && streamingCloseBtn && streamingFrame) {
-            watchMovieBtn.addEventListener('click', () => {
-                // Get the IMDB ID from the item details
+            let currentSource = 'vidsrc'; // Default source
+
+            // Function to update streaming URL
+            const updateStreamingUrl = (source) => {
                 const imdbId = itemDetails.imdb_id;
                 if (imdbId) {
-                    // Construct the VidSrc URL
-                    const vidsrcUrl = `https://vidsrc.to/embed/movie/${imdbId}`;
-                    streamingFrame.src = vidsrcUrl;
+                    let streamingUrl = '';
+                    if (source === 'vidsrc') {
+                        streamingUrl = `https://vidsrc.to/embed/movie/${imdbId}`;
+                    } else if (source === 'autoembed') {
+                        streamingUrl = `https://player.autoembed.cc/embed/movie/${imdbId}`;
+                    }
+                    streamingFrame.src = streamingUrl;
+                }
+            };
+
+            // Source selection buttons
+            streamingSourceBtns?.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    streamingSourceBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentSource = btn.dataset.source;
+                    updateStreamingUrl(currentSource);
+                });
+            });
+
+            watchMovieBtn.addEventListener('click', () => {
+                const imdbId = itemDetails.imdb_id;
+                if (imdbId) {
+                    updateStreamingUrl(currentSource);
                     streamingModal.style.display = 'flex';
                 } else {
                     alert('Sorry, streaming is not available for this title.');
