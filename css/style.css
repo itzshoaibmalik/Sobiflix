@@ -1081,61 +1081,28 @@ ul {
 .modal {
     display: none;
     position: fixed;
-    z-index: 1001;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    align-items: center;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
     justify-content: center;
-    animation: fadeIn 0.3s ease;
-}
-
-.modal.show {
-    display: flex;
+    align-items: center;
 }
 
 .modal-content {
     position: relative;
-    background-color: #000;
-    padding: 0;
-    max-width: 900px;
     width: 90%;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    max-width: 1200px;
+    background: #000;
     border-radius: 8px;
     overflow: hidden;
 }
 
-.close-modal-btn {
-    position: absolute;
-    top: -15px;
-    /* Position slightly outside */
-    right: -15px;
-    color: #fff;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.8em;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    line-height: 1;
-}
-
-.close-modal-btn:hover {
-    background: var(--primary-accent);
-    color: white;
-}
-
 .video-container {
     position: relative;
-    padding-bottom: 56.25%;
-    /* 16:9 Aspect Ratio */
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
     height: 0;
     overflow: hidden;
 }
@@ -1146,6 +1113,46 @@ ul {
     left: 0;
     width: 100%;
     height: 100%;
+    border: none;
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1001;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.close-modal-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+/* Responsive adjustments for modals */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+    }
+    
+    .detail-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .detail-actions .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
 }
 
 /* --- Footer Polish --- */

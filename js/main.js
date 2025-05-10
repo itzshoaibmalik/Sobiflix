@@ -577,6 +577,7 @@ async function initMovieDetailPage() {
                         <p class="synopsis" id="detail-synopsis">${itemDetails.overview || 'No overview available.'}</p>
                         <div class="detail-actions">
                             <button class="btn btn-primary btn-lg" id="play-trailer-btn"><i class="fas fa-play"></i> Play Trailer</button>
+                            <button class="btn btn-primary btn-lg" id="watch-movie-btn"><i class="fas fa-film"></i> Watch Movie</button>
                             <button class="btn btn-secondary watchlist-btn"><i class="fas fa-plus"></i> Add to Watchlist</button>
                         </div>
                     </div>
@@ -610,6 +611,16 @@ async function initMovieDetailPage() {
                     <span class="close-modal-btn">×</span>
                     <div class="video-container">
                         <iframe id="youtube-trailer" width="560" height="315" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Streaming Modal -->
+            <div class="modal" id="streaming-modal">
+                <div class="modal-content">
+                    <span class="close-modal-btn">×</span>
+                    <div class="video-container">
+                        <iframe id="streaming-frame" width="560" height="315" src="" title="Movie Player" frameborder="0" allowfullscreen></iframe>
                     </div>
                 </div>
             </div>
@@ -677,6 +688,40 @@ async function initMovieDetailPage() {
         const trailerModal = document.getElementById('trailer-modal');
         const closeModalBtn = trailerModal?.querySelector('.close-modal-btn');
         const trailerFrame = document.getElementById('youtube-trailer');
+
+        // Streaming Button Logic
+        const watchMovieBtn = document.getElementById('watch-movie-btn');
+        const streamingModal = document.getElementById('streaming-modal');
+        const streamingCloseBtn = streamingModal?.querySelector('.close-modal-btn');
+        const streamingFrame = document.getElementById('streaming-frame');
+
+        if (watchMovieBtn && streamingModal && streamingCloseBtn && streamingFrame) {
+            watchMovieBtn.addEventListener('click', () => {
+                // Get the IMDB ID from the item details
+                const imdbId = itemDetails.imdb_id;
+                if (imdbId) {
+                    // Construct the VidSrc URL
+                    const vidsrcUrl = `https://vidsrc.to/embed/movie/${imdbId}`;
+                    streamingFrame.src = vidsrcUrl;
+                    streamingModal.style.display = 'flex';
+                } else {
+                    alert('Sorry, streaming is not available for this title.');
+                }
+            });
+
+            streamingCloseBtn.addEventListener('click', () => {
+                streamingFrame.src = '';
+                streamingModal.style.display = 'none';
+            });
+
+            // Close modal when clicking outside
+            streamingModal.addEventListener('click', (e) => {
+                if (e.target === streamingModal) {
+                    streamingFrame.src = '';
+                    streamingModal.style.display = 'none';
+                }
+            });
+        }
 
         if (trailerBtn && trailerModal && closeModalBtn && trailerFrame && videos?.results) {
             const trailer = videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');

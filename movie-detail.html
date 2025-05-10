@@ -63,8 +63,9 @@
                     <h2>Overview</h2>
                     <p class="synopsis" id="detail-synopsis">Synopsis loading...</p>
                     <div class="detail-actions">
-                         <button class="btn btn-primary btn-lg" id="play-trailer-btn"><i class="fas fa-play"></i> Play Trailer</button>
-                         <button class="btn btn-secondary watchlist-btn"><i class="fas fa-plus"></i> Add to Watchlist</button>
+                        <button class="btn btn-primary btn-lg" id="play-trailer-btn"><i class="fas fa-play"></i> Play Trailer</button>
+                        <button class="btn btn-primary btn-lg" id="watch-movie-btn"><i class="fas fa-film"></i> Watch Movie</button>
+                        <button class="btn btn-secondary watchlist-btn"><i class="fas fa-plus"></i> Add to Watchlist</button>
                     </div>
                  </div>
              </div>
@@ -107,6 +108,16 @@
                     <iframe id="youtube-trailer" width="560" height="315" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                  </div>
              </div>
+        </div>
+
+        <!-- Streaming Modal (Hidden by default) -->
+        <div class="modal" id="streaming-modal">
+            <div class="modal-content">
+                <span class="close-modal-btn">×</span>
+                <div class="video-container">
+                    <iframe id="streaming-frame" width="560" height="315" src="" title="Movie Player" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
         </div>
 
     </main>
