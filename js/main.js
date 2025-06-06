@@ -282,8 +282,12 @@ async function fetchTMDbData(endpoint, queryParams = '') {
 // --- Card Creation ---
 console.log("[DEBUG] JS: Defining createGenericCard.");
 function createGenericCard(item, itemType = 'movie', options = { showRemoveButton: false }) {
-    console.log(`[DEBUG] JS: Creating card START - ID: ${item?.id}, Type: ${itemType}`);
-    if (!item || typeof item !== 'object' || !item.id || !(item.title || item.name)) { console.warn(`[DEBUG] JS: Skipping card creation - Invalid item data:`, item); return null; }
+    console.log(`[DEBUG] JS: Creating card START - ID: ${item?.id}, Type: ${itemType}, Item data:`, item);
+    
+    if (!item || typeof item !== 'object' || !item.id) { 
+        console.warn(`[DEBUG] JS: Skipping card creation - Invalid item data:`, item); 
+        return null; 
+    }
 
     const itemCard = document.createElement('div');
     itemCard.classList.add('item-card');
@@ -291,7 +295,28 @@ function createGenericCard(item, itemType = 'movie', options = { showRemoveButto
     itemCard.dataset.itemId = item.id;
     itemCard.dataset.itemType = itemType;
 
-    const title = itemType === 'movie' ? item.title : item.name;
+    // Improved title handling with debug logging
+    let title = '';
+    if (itemType === 'movie') {
+        title = item.title || item.original_title || item.name || item.original_name || 'Untitled Movie';
+        console.log(`[DEBUG] Movie title resolution:`, {
+            title: item.title,
+            original_title: item.original_title,
+            name: item.name,
+            original_name: item.original_name,
+            final_title: title
+        });
+    } else {
+        title = item.name || item.original_name || item.title || item.original_title || 'Untitled Show';
+        console.log(`[DEBUG] TV Show title resolution:`, {
+            name: item.name,
+            original_name: item.original_name,
+            title: item.title,
+            original_title: item.original_title,
+            final_title: title
+        });
+    }
+
     const releaseDateRaw = itemType === 'movie' ? item.release_date : item.first_air_date;
     const releaseDate = releaseDateRaw ? releaseDateRaw.substring(0, 4) : '';
     const detailLink = `movie-detail.html?id=${item.id}&type=${itemType}`;
@@ -299,14 +324,17 @@ function createGenericCard(item, itemType = 'movie', options = { showRemoveButto
     const posterForStorage = item.poster_path;
 
     let actionButtonHtml = '';
-    if (options.showRemoveButton) { actionButtonHtml = `<button class="watchlist-remove-btn" aria-label="Remove from Watchlist"><i class="fas fa-trash"></i></button>`; }
-    else { actionButtonHtml = `<button class="watchlist-btn" aria-label="Add to Watchlist"><i class="fas fa-plus"></i></button>`; }
+    if (options.showRemoveButton) { 
+        actionButtonHtml = `<button class="watchlist-remove-btn" aria-label="Remove from Watchlist"><i class="fas fa-trash"></i></button>`; 
+    } else { 
+        actionButtonHtml = `<button class="watchlist-btn" aria-label="Add to Watchlist"><i class="fas fa-plus"></i></button>`; 
+    }
 
     itemCard.innerHTML = `
-        <img src="${posterPath}" alt="${title || 'Poster'}">
+        <img src="${posterPath}" alt="${title}">
         <div class="card-overlay">
             ${actionButtonHtml}
-            <h3>${title || 'Untitled'}</h3>
+            <h3>${title}</h3>
             <div class="card-meta">
                 ${item.vote_average ? `<span class="rating"><i class="fas fa-star"></i> ${item.vote_average.toFixed(1)}</span>` : ''}
                 ${releaseDate ? `<span class="year">(${releaseDate})</span>` : ''}
@@ -318,40 +346,28 @@ function createGenericCard(item, itemType = 'movie', options = { showRemoveButto
 
     // Setup action button listener
     console.log(`[DEBUG] JS: Setting up action button for card ${item.id}`);
-    try {
-        const actionButton = itemCard.querySelector('.watchlist-btn, .watchlist-remove-btn');
-        if (actionButton) {
-            if (options.showRemoveButton) {
-                actionButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (confirm(`Remove "${title}" from your watchlist?`)) { removeFromWatchlist(item.id, itemType); }
-                });
-                actionButton.disabled = !isLoggedIn();
+    const actionButton = itemCard.querySelector(options.showRemoveButton ? '.watchlist-remove-btn' : '.watchlist-btn');
+    if (actionButton) {
+        actionButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const isInList = isItemInWatchlist(item.id, itemType);
+            if (isInList) {
+                removeFromWatchlist(item.id, itemType);
             } else {
-                 console.log(`[DEBUG] JS: Calling updateWatchlistButtonUI for ADD button, item ${item.id}`);
-                 updateWatchlistButtonUI(actionButton, item.id, itemType);
-                 actionButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const user = getCurrentUser();
-                    if (!user) { alert("Please log in to manage your watchlist."); return; }
-                    console.log(`[DEBUG] JS: Watchlist ADD/REMOVE button clicked for item ${item.id}`);
-                    const isInList = isItemInWatchlist(item.id, itemType);
-                    console.log(`[DEBUG] JS: Item ${item.id} currently in list: ${isInList}`);
-                    if (isInList) { removeFromWatchlist(item.id, itemType); }
-                    else { addToWatchlist(item.id, itemType, title, posterForStorage); }
-                    console.log(`[DEBUG] JS: Updating button UI again after action for ${item.id}`);
-                    updateWatchlistButtonUI(actionButton, item.id, itemType);
-                });
-                // actionButton.disabled = !isLoggedIn();
+                addToWatchlist(item.id, itemType, title, posterForStorage);
             }
-             console.log(`[DEBUG] JS: Action button listener setup complete for ${item.id}`);
-        } else { console.warn(`[DEBUG] JS: Action button *not found* in card HTML for ${item.id}`); }
-    } catch (error) { console.error(`[DEBUG] JS: *** ERROR setting up action button for ${item.id} ***:`, error); }
+            updateWatchlistButtonUI(actionButton, item.id, itemType);
+        });
+    }
 
     // Card click navigation
-    itemCard.addEventListener('click', (event) => { if (!event.target.closest('button') && !event.target.closest('a')) { window.location.href = detailLink; }});
+    itemCard.addEventListener('click', (event) => { 
+        if (!event.target.closest('button') && !event.target.closest('a')) { 
+            window.location.href = detailLink; 
+        }
+    });
 
-    console.log(`[DEBUG] JS: Creating card END - ID: ${item.id}`);
+    console.log(`[DEBUG] JS: Creating card END - ID: ${item.id}, Title: ${title}`);
     return itemCard;
 }
 
@@ -984,6 +1000,7 @@ function initSearchResults() {
     fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`)
         .then(response => response.json())
         .then(data => {
+            console.log('[DEBUG] Search results:', data); // Debug log
             resultsContainer.innerHTML = '';
             
             if (!data.results || data.results.length === 0) {
@@ -992,10 +1009,11 @@ function initSearchResults() {
             }
 
             // Filter and display results
-            const validResults = data.results.filter(item => 
-                (item.media_type === 'movie' || item.media_type === 'tv') && 
-                item.poster_path
-            );
+            const validResults = data.results.filter(item => {
+                console.log('[DEBUG] Processing item:', item); // Debug log for each item
+                return (item.media_type === 'movie' || item.media_type === 'tv') && 
+                       item.poster_path;
+            });
 
             if (validResults.length === 0) {
                 noResultsDiv.style.display = 'block';
@@ -1003,8 +1021,11 @@ function initSearchResults() {
             }
 
             validResults.forEach(item => {
-                const card = createGenericCard(item);
-                resultsContainer.appendChild(card);
+                console.log('[DEBUG] Creating card for:', item); // Debug log before card creation
+                const card = createGenericCard(item, item.media_type);
+                if (card) {
+                    resultsContainer.appendChild(card);
+                }
             });
         })
         .catch(error => {
